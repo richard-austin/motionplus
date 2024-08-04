@@ -241,7 +241,7 @@ static void mlp_detected_trigger(ctx_dev *cam)
                 util_exec_command(cam, cam->conf->on_event_start.c_str(), NULL);
             }
             mlp_movie_start(cam);
-            dbse_exec(cam, NULL, "event_start");
+            cam->motapp->dbse->exec(cam, "", "event_start");
 
             if (cam->new_img & (NEWIMG_FIRST | NEWIMG_BEST | NEWIMG_CENTER)) {
                 cam->picture->save_preview();
@@ -427,7 +427,7 @@ int mlp_cam_next(ctx_dev *cam, ctx_image_data *img_data)
         retcd = cam->netcam->next(img_data);
         if ((retcd == CAPTURE_SUCCESS) &&
             (cam->netcam_high != nullptr)) {
-            retcd = cam->netcam->next(img_data);
+            retcd = cam->netcam_high->next(img_data);
         }
         cam->rotate->process(img_data);
     } else if (cam->camera_type == CAMERA_TYPE_V4L2) {
@@ -668,7 +668,7 @@ void mlp_cleanup(ctx_dev *cam)
             util_exec_command(cam, cam->conf->on_event_end.c_str(), NULL);
         }
         mlp_movie_end(cam);
-        dbse_exec(cam, NULL, "event_end");
+        cam->motapp->dbse->exec(cam, "", "event_end");
     }
 
     webu_getimg_deinit(cam);
@@ -1208,7 +1208,7 @@ static void mlp_actions_event(ctx_dev *cam)
                 util_exec_command(cam, cam->conf->on_event_end.c_str(), NULL);
             }
             mlp_movie_end(cam);
-            dbse_exec(cam, NULL, "event_end");
+            cam->motapp->dbse->exec(cam, "", "event_end");
 
             mlp_track_center(cam);
 
